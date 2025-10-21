@@ -1,0 +1,48 @@
+{
+    "name": "Document Service",
+    "image":"mcr.microsoft.com/devcontainers/go:dev-1.25-trixie",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "features": {
+        
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "golang.go",
+                "premparihar.gotestexplorer",
+                "usernamehw.errorlens",
+                "ms-python.debugpy",
+                "766b.go-outliner",
+                "eamodio.gitlens",
+                "github.copilot",
+                "github.copilot-chat"
+            ],
+            "settings": {
+                "python.linting.enabled": true,
+                "editor.formatOnSave": true,
+                "files.autoSave": "afterDelay",
+                "editor.codeActionsOnSave": {
+                    "source.organizeImports": "always",
+                    "source.fixAll.ruff": "always",
+                    "source.unusedImports": "always"
+                }
+            }
+        }
+    },
+    //"postCreateCommand": "uv lock",
+    // "postStartCommand": "uv run --env-file .env uvicorn main:app --host 0.0.0.0 --reload",
+    "hostRequirements": {
+        "cpus": 2,
+        "memory": "4gb",
+        "storage": "4gb"
+    },
+    "forwardPorts": [
+        8000
+    ],
+    "portsAttributes": {
+        "8000": {
+            "protocol": "http",
+            "label": "Document Service"
+        }
+    }
+}

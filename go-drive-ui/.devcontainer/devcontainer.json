@@ -1,0 +1,47 @@
+{
+    "name": "Document Service",
+    "image":"mcr.microsoft.com/devcontainers/typescript-node:dev-24-bookworm",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "features": {
+        "ghcr.io/devcontainers-extra/features/pnpm:2": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "bradlc.vscode-tailwindcss",
+                "nickytonline.vscode-preact-snippets",
+                "infeng.vscode-react-typescript",
+                "eamodio.gitlens",
+                "usernamehw.errorlens",
+                "github.copilot",
+                "github.copilot-chat"
+            ],
+            "settings": {
+                "editor.tabSize": 4,
+                "editor.insertSpaces": true,
+                "editor.formatOnSave": true,
+                "files.autoSave": "afterDelay",
+                "editor.codeActionsOnSave": {
+                    "source.organizeImports": "always",
+                    "source.unusedImports": "always"
+                }
+            }
+        }
+    },
+    "postCreateCommand": "pnpm i",
+    // "postStartCommand": "uv run --env-file .env uvicorn main:app --host 0.0.0.0 --reload",
+    "hostRequirements": {
+        "cpus": 2,
+        "memory": "4gb",
+        "storage": "4gb"
+    },
+    "forwardPorts": [
+        5173
+    ],
+    "portsAttributes": {
+        "5173": {
+            "protocol": "http",
+            "label": ""
+        }
+    }
+}
