@@ -1,0 +1,13 @@
+[project]
+name = "rag-service"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[all]>=0.120.0",
+    "langchain>=1.0.2",
+    "langchain-community>=0.4",
+    "langchain-google-genai>=3.0.0",
+    "langchain-mongodb>=0.7.1",
+]

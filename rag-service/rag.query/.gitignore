@@ -1,0 +1,11 @@
+##commons
+__pycache__
+
+
+#environment files
+.env
+
+#virtual env
+.venv
+
+
