@@ -1,0 +1,32 @@
+{
+    "name": "Nimbus IaC",
+    "dockerComposeFile": "docker-compose.yml",
+    // "image":"mcr.microsoft.com/devcontainers/base:dev-debian-13",
+    "service": "iac",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "features": {
+        "ghcr.io/devcontainers/features/terraform:1": {},
+        "ghcr.io/devcontainers/features/python:1": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "github.copilot",
+                "github.copilot-chat",
+                "dannysteenman.aws-terraform-extension-pack"
+            ],
+            "settings": {
+                "python.linting.enabled": true,
+                "editor.formatOnSave": true,
+                "files.autoSave": "afterDelay"
+            }
+        }
+    },
+    //"postCreateCommand": "uv lock",
+    // "postStartCommand": "uv run --env-file .env uvicorn main:app --host 0.0.0.0 --reload",
+    "hostRequirements": {
+        "cpus": 3,
+        "memory": "6gb",
+        "storage": "4gb"
+    }
+}

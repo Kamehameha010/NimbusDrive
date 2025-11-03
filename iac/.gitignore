@@ -1,2 +1,7 @@
+# terafform folders
 .terraform/
+builds/*
+
+# terraform state
+
 *.tfstate
