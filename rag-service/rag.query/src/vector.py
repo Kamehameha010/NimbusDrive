@@ -9,7 +9,7 @@ from .config import settings
 
 
 @contextmanager
-def get_vector_db() -> Generator:
+def get_vector_db() -> Generator[MongoDBAtlasVectorSearch, None, None]:
     client = MongoClient(settings.mongo_uri)
     db = client[settings.mongo_db]
     collection = db[settings.mongo_collection]

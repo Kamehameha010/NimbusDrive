@@ -2,5 +2,5 @@ from pydantic import BaseModel
 
 
 class QueryDocument(BaseModel):
-    query: str
+    question: str
     session: str

@@ -15,3 +15,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Update devcontainer settings
 
+## [0.2.0] - 2025-11-03
+
+### Added
+- New endpoint `/documents/{doc_id}` for performing simple queries on a specific document.
