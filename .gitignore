@@ -1,1 +1,6 @@
+#pnpm cache
+
 .pnpm-store/
+
+#ruff cache
+.ruff_cache/

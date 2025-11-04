@@ -1,5 +1,5 @@
 {
-    "name": "Nimbus RAG",
+    "name": "Nimbus RAG Vectorize",
     "image":"mcr.microsoft.com/devcontainers/python:dev-3.12-bookworm",
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
     "features": {
@@ -20,6 +20,7 @@
                 "dannysteenman.aws-terraform-extension-pack"
             ],
             "settings": {
+                "python.defaultInterpreterPath": "/workspaces/NimbusDrive/rag-service/rag.vectorize/.venv/bin/python",
                 "python.linting.enabled": true,
                 "python.linting.ruffEnabled": true,
                 "python.linting.pylintEnabled": false,
@@ -33,7 +34,7 @@
             }
         }
     },
-    "postCreateCommand": "uv sync --project rag-service && uv lock --project rag-service",
+    "postCreateCommand": "cd rag-service/rag.vectorize && uv sync --locked",
     // "postStartCommand": "uv run --env-file .env uvicorn main:app --host 0.0.0.0 --reload",
     "hostRequirements": {
         "cpus": 2,
