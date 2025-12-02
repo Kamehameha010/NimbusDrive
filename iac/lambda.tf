@@ -1,15 +1,18 @@
-# Lambda Validate (Authorizer)
-resource "aws_lambda_function" "authorizer" {
+
+module "lambda_authorizer_function" {
+  source = "terraform-aws-modules/lambda/aws"
+
   function_name = "authorizer"
+  description   = "My awesome lambda function"
   handler       = "supabase_authorizer.handler"
   runtime       = "python3.13"
-  role          = aws_iam_role.lambda_exec.arn
-  filename      = "${path.module}/lambda/validate.zip"
 
-  environment {
-    variables = {
-      SECRETS_NAME= ""
-    }
+  source_path = "../apigateway/authorizer"
+
+  create_lambda_function_url = false
+
+  environment_variables = {
+    SECRETS_NAME= ""
   }
-}
 
+}

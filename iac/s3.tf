@@ -1,4 +1,4 @@
-module "s3_bucket" {
+module "s3_bucket_files" {
   source = "terraform-aws-modules/s3-bucket/aws"
 
   bucket = "nimbus-drive"
@@ -13,7 +13,7 @@ module "s3_bucket" {
 }
 
 
-module "s3_bucket" {
+module "s3_bucket_thumbnails" {
   source = "terraform-aws-modules/s3-bucket/aws"
 
   bucket = "nimbus-drive-thumbnails"
