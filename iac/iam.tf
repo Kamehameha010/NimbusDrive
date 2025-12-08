@@ -1,19 +1,34 @@
-resource "aws_iam_role" "lambda_exec" {
-  name = "lambda_exec_role"
+data "aws_iam_policy_document" "invocation_assume_role" {
+  statement {
+    effect = "Allow"
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
-      Principal = {
-        Service = "lambda.amazonaws.com"
-      }
-    }]
-  })
+    principals {
+      type        = "Service"
+      identifiers = ["apigateway.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
-  role       = aws_iam_role.lambda_exec.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+resource "aws_iam_role" "invocation_role" {
+  name               = "api_gateway_auth_invocation"
+  path               = "/"
+  assume_role_policy = data.aws_iam_policy_document.invocation_assume_role.json
+}
+
+data "aws_iam_policy_document" "invocation_policy" {
+  statement {
+    effect    = "Allow"
+    actions   = ["lambda:InvokeFunction"]
+    resources = [module.lambda_authorizer_function.lambda_function_arn]
+  }
+
+}
+
+
+resource "aws_iam_role_policy" "invocation_policy" {
+  name   = "default"
+  role   = aws_iam_role.invocation_role.id
+  policy = data.aws_iam_policy_document.invocation_policy.json
 }
