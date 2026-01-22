@@ -32,3 +32,16 @@ resource "aws_iam_role_policy" "invocation_policy" {
   role   = aws_iam_role.invocation_role.id
   policy = data.aws_iam_policy_document.invocation_policy.json
 }
+
+resource "aws_iam_policy" "authorizer_secrets" {
+  name = "nimbus-authorizer-secrets"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = "secretsmanager:GetSecretValue"
+      Resource = "${aws_secretsmanager_secret.supabase.arn}*"
+    }]
+  })
+}

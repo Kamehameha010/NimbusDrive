@@ -18,5 +18,10 @@ module "lambda_authorizer_function" {
 
 }
 
+resource "aws_iam_role_policy_attachment" "authorizer_secrets_attach" {
+  role       = aws_iam_role.lambda_authorizer_role.name
+  policy_arn = aws_iam_policy.authorizer_secrets.arn
+}
+
 
 

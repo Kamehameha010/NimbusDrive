@@ -4,3 +4,5 @@
 
 #ruff cache
 .ruff_cache/
+
+terraform.tfvars
