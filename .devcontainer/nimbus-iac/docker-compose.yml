@@ -6,6 +6,9 @@ services:
     container_name: terrafor
     volumes:
       - ../../..:/workspaces:cached
+    networks:
+      nimbus:
+        ipv4_address: 172.16.0.25
 
   localstack:
     image: localstack/localstack:4.10.0
@@ -17,3 +20,15 @@ services:
       - DEBUG=${DEBUG:-0}
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
+
+    networks:
+      nimbus:
+        ipv4_address: 172.16.0.2
+
+
+networks:
+  nimbus:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.0.0/24
