@@ -2,5 +2,3 @@ PyJWT == 2.10.1
 requests == 2.31.0
 
 pydantic-settings-aws==0.1.2
-PyJWT==2.10.1
-requests==2.31.0

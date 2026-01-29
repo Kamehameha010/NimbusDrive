@@ -115,15 +115,17 @@ data "aws_iam_policy_document" "lambda_vectorize_assume_role" {
 
 
 data "aws_iam_policy_document" "vectorize_policy" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "secretsmanager:GetSecretValue"
-    ]
-    resources = ["*"]
-    #resources = [aws_secretsmanager_secret.supabase.arn]
-  }
-
+statement {
+  effect = "Allow"
+  actions = [
+    "ssm:GetParameter",
+    "ssm:GetParameters",
+    "ssm:GetParametersByPath"
+  ]
+  resources = [
+    "arn:aws:ssm:us-east-1:*:parameter/nimbus/*"
+  ]
+}
   statement {
     effect = "Allow"
     actions = [
