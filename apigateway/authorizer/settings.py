@@ -1,17 +1,15 @@
-from pydantic_settings_aws import SecretsManagerBaseSettings
+import os
+from typing import Annotated
+
+from pydantic_settings import SettingsConfigDict
+from pydantic_settings_aws import ParameterStoreBaseSettings
 
 
-class AWSSecretsSettings(SecretsManagerBaseSettings):
-    # 👇 nombre EXACTO del secret en AWS
-    secrets_name = "nimbus/supabase"
+class SupaBaseSettings(ParameterStoreBaseSettings):
 
-    # 👇 región donde se crea el secret
-    region_name = "us-east-1"
-
-# crear un json "my_secret" con las siguientes claves y valores
-    SUPABASE_URL: str
-    SUPABASE_ANON_KEY: str
-    SUPABASE_JWT_SECRET: str
-
-
-settings = AWSSecretsSettings()
+    model_config = SettingsConfigDict(
+        aws_region=os.getenv("AWS_REGION")
+    )
+    supabase_url: Annotated[str, "/nimbus/supabase/supabase_url"]
+    supabase_anon_key: Annotated[str, "/nimbus/supabase/supabase_anon_key"]
+    supabase_jwt_secret: Annotated[str, "/nimbus/supabase/jwt_secret"]
