@@ -1,33 +1,22 @@
-import os
 from typing import Any, Generator
 
 from langchain_community.document_loaders.s3_file import S3FileLoader
 from langchain_community.document_loaders.unstructured import UnstructuredBaseLoader
 from langchain_core.documents import Document
-from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
-from langchain_mongodb import MongoDBAtlasVectorSearch
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from pymongo import MongoClient
+from shared.vector import get_mongodb_client, get_vector_store
 
-embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
-
-client = MongoClient(os.getenv("MONGODB_URI"))
-db = client[os.getenv("MONGODB_DB")]
-collection = db[os.getenv("MONGODB_COLLECTION")]
-atlas_vector_search_index = os.getenv("MONGODB_VECTOR_INDEX")
-
-
-vector_store = MongoDBAtlasVectorSearch(
-    collection=collection,
-    embedding=embeddings,
-    index_name=atlas_vector_search_index,
-    relevance_score_fn="cosine",
-)
+client = get_mongodb_client()
+vector_store = get_vector_store(client)
 vector_store.create_vector_search_index(dimensions=3072)
 
 
 def handler(event, context):
-    s3loader = S3FileLoader(bucket="", key="", region_name="", endpoint_url="")
+    bucket_name = event['detail']['bucket']['name']
+    object_key = event['detail']['object']['key']
+    region = event['region']
+    s3loader = S3FileLoader(
+        bucket=bucket_name, key=object_key, region_name=region)
 
     doc_loaded = load_doc(s3loader, {})
 
