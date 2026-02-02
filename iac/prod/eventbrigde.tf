@@ -6,7 +6,6 @@ module "s3_events" {
   create_bus = false
   bus_name   = "default"
 
-
   rules = {
     s3_events_rule = {
       name        = "s3-new-file-event-rule"
@@ -15,6 +14,8 @@ module "s3_events" {
         "source" : [
           "aws.s3"
         ],
+
+        "region" : [var.aws_region]
 
         "detail-type" : [
           "Object Created",
@@ -36,18 +37,23 @@ module "s3_events" {
 
   }
 
+  create_role = true
+  role_name   = "Amazon_EventBridge_Invoke_Lambda-${random_string.iam_role_suffix[2].id}"
+
+  lambda_target_arns   = [module.lambda_vectorize_function.lambda_function_arn]
+  attach_lambda_policy = true
+
 
   targets = {
     s3_events_rule = [
       {
-        arn = module.lambda_vectorize_function.lambda_function_arn
-        name  = module.lambda_vectorize_function.lambda_function_name
+        arn             = module.lambda_vectorize_function.lambda_function_arn
+        name            = "lambda-vectorize"
+        attach_role_arn = true
       }
     ]
   }
 
-  # depends_on = [
-  #   module.s3_bucket_files,
-  #   module.lambda_vectorize_function
-  # ]
+
+
 }

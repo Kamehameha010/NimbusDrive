@@ -1,5 +1,5 @@
 resource "random_string" "suffix" {
-  count   = 3
+  count   = 4
   length  = 8
   special = false
   upper   = false

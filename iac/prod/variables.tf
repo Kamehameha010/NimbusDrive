@@ -1,22 +1,36 @@
+variable "aws_region" {
+  type    = string
+  default = "us-east-1"
+}
+
+variable "aws_access_key_id" {
+  type = string
+}
+
+variable "aws_secret_access_key" {
+  type      = string
+  sensitive = true
+}
+
 variable "mongo_uri" {
-  type      = SecureString
+  type      = string
   sensitive = true
 }
 
 variable "mongodb_dbname" {
-  type      = string
+  type = string
 }
 
 variable "mongodb_collection" {
-  type      = string
+  type = string
 }
 
 variable "mongodb_vector_index" {
-  type      = string
+  type = string
 }
 
 variable "google_api_key" {
-  type      = SecureString
+  type      = string
   sensitive = true
 }
 
@@ -33,11 +47,16 @@ variable "supabase_url" {
 }
 
 variable "supabase_anon_key" {
-  type      = SecureString
+  type      = string
   sensitive = true
 }
 
 variable "supabase_jwt_secret" {
-  type      = SecureString
+  type      = string
   sensitive = true
+}
+
+
+variable "kms_ssm_id" {
+  type = string
 }

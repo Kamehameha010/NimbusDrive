@@ -30,7 +30,7 @@ data "aws_iam_policy_document" "invocation_policy" {
 }
 
 resource "aws_iam_role_policy" "invocation_policy" {
-  name   = "default"
+  name   = "ApiGateway_Invocation_Lambda-${random_string.iam_role_suffix[0].id}"
   role   = aws_iam_role.invocation_role.id
   policy = data.aws_iam_policy_document.invocation_policy.json
 }
@@ -82,13 +82,13 @@ data "aws_iam_policy_document" "authorizer_secrets_policy" {
 
 
 resource "aws_iam_role_policy" "authorizer_secrets_attach" {
-  name   = "authorizer-policy-${random_string.suffix[0].result}"
+  name   = "authorizer-policy-${random_string.iam_role_suffix[0].id}"
   role   = aws_iam_role.lambda_authorizer_role.id
   policy = data.aws_iam_policy_document.authorizer_secrets_policy.json
 }
 
 resource "aws_iam_role" "lambda_authorizer_role" {
-  name               = "autthorizer-${random_string.suffix[0].result}"
+  name               = "lambda-authorizer-${random_string.iam_role_suffix[0].id}"
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.lambda_authorizer_assume_role.json
 
@@ -115,17 +115,17 @@ data "aws_iam_policy_document" "lambda_vectorize_assume_role" {
 
 
 data "aws_iam_policy_document" "vectorize_policy" {
-statement {
-  effect = "Allow"
-  actions = [
-    "ssm:GetParameter",
-    "ssm:GetParameters",
-    "ssm:GetParametersByPath"
-  ]
-  resources = [
-    "arn:aws:ssm:us-east-1:*:parameter/nimbus/*"
-  ]
-}
+  statement {
+    effect = "Allow"
+    actions = [
+      "ssm:GetParameter",
+      "ssm:GetParameters",
+      "ssm:GetParametersByPath"
+    ]
+    resources = [
+      "arn:aws:ssm:us-east-1:*:parameter/nimbus/*"
+    ]
+  }
   statement {
     effect = "Allow"
     actions = [
@@ -144,13 +144,13 @@ statement {
 
 
 resource "aws_iam_role_policy" "vectorize_policy" {
-  name   = "vectorize-policy-${random_string.suffix[1].result}"
+  name   = "vectorize-policy-${random_string.iam_role_suffix[1].id}"
   role   = aws_iam_role.lambda_vectorize_role.id
   policy = data.aws_iam_policy_document.vectorize_policy.json
 }
 
 resource "aws_iam_role" "lambda_vectorize_role" {
-  name               = "vectorize-${random_string.suffix[1].result}"
+  name               = "vectorize-${random_string.iam_role_suffix[1].id}"
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.lambda_vectorize_assume_role.json
 
@@ -158,28 +158,3 @@ resource "aws_iam_role" "lambda_vectorize_role" {
 
 #endregion
 
-
-#region IAM ROLE FOR EVENTBRIDGE TO INVOKE LAMBDA
-
-data "aws_iam_policy_document" "eventbridge_invoke_vectorize_policy" {
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "lambda:InvokeFunction"
-    ]
-    resources = [
-     module.lambda_vectorize_function.lambda_function_arn
-    ]
-  }
-
-}
-
-
-resource "aws_iam_role_policy" "eventbridge_invoke_vectorize_policy" {
-  name   = "Amazon_EventBridge_Invoke_Lambda_-${random_string.suffix[3].result}"
-  role   = module.s3_events.eventbridge_role_name
-  policy = data.aws_iam_policy_document.eventbridge_invoke_vectorize_policy.json
-}
-
-#endregion

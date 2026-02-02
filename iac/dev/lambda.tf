@@ -41,9 +41,34 @@ module "lambda_vectorize_function" {
 
   cloudwatch_logs_retention_in_days = 7
 
+  layers = [
+    module.Shared_lambda_layer.lambda_layer_arn
+  ]
+
   environment_variables = {
     SECRETS_NAME = "aws_secretsmanager_secret.supabase.name"
   }
 
 }
+
+module "Shared_lambda_layer" {
+
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "8.1.2"
+
+  create_layer = true
+
+  layer_name = "Nimbus-share-layer"
+
+  description = "nimbus share layer"
+
+  compatible_runtimes = ["python3.13"]
+
+  source_path = "../../shared/src/shared"
+
+  store_on_s3 = true
+  s3_bucket   = module.s3_nimbus_share_layer.s3_bucket_arn
+
+}
+
 
