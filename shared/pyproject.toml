@@ -13,6 +13,7 @@ dependencies = [
     "langchain-google-genai>=4.2.0",
     "langchain-mongodb>=0.11.0",
     "pydantic-settings-aws>=0.1.2",
+    "unstructured>=0.20.2",
 ]
 
 [build-system]

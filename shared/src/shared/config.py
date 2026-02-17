@@ -25,7 +25,7 @@ class AppSettings(ParameterStoreBaseSettings):
 class SupaBaseSettings(ParameterStoreBaseSettings):
 
     model_config = SettingsConfigDict(
-        aws_region=os.getenv("AWS_REGION")
+        aws_region=os.getenv("AWS_REGION", "us-east-1")
     )
     supabase_url: Annotated[str, "/nimbus/supabase/supabase_url"]
     supabase_anon_key: Annotated[str, "/nimbus/supabase/supabase_anon_key"]

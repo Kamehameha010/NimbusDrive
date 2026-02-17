@@ -14,7 +14,9 @@ def get_mongodb_client() -> MongoClient:
 
 def get_embeddings() -> GoogleGenerativeAIEmbeddings:
     return GoogleGenerativeAIEmbeddings(
-        model=app_settings.google_model_embedding)
+        model=app_settings.google_model_embedding,
+        api_key=app_settings.google_api_key
+        )
 
 
 def get_vector_store(client: MongoClient) -> MongoDBAtlasVectorSearch:

@@ -1,10 +1,12 @@
 from typing import Any, Generator
 
+
+from vector import get_mongodb_client, get_vector_store
+
 from langchain_community.document_loaders.s3_file import S3FileLoader
 from langchain_community.document_loaders.unstructured import UnstructuredBaseLoader
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from shared.vector import get_mongodb_client, get_vector_store
 
 client = get_mongodb_client()
 vector_store = get_vector_store(client)
@@ -43,3 +45,16 @@ def load_doc(
     for page in loader.lazy_load():
         page.metadata.update(**extra_metadata)
         yield page
+
+
+
+if __name__ == "__main__":
+    event = {
+        "detail": {
+            "bucket": {"name": "my-bucket"},
+            "object": {"key": "path/to/my/file.txt"}
+        },
+        "region": "us-west-2"
+    }
+    context = {}
+    handler(event, context)
