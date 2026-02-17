@@ -35,11 +35,12 @@ module "lambda_vectorize_function" {
 
   create_lambda_function_url = false
   create_role                = false
+  publish                    = true
 
   lambda_role = aws_iam_role.lambda_vectorize_role.arn
 
   layers = [
-    module.Shared_lambda_layer.lambda_layer_arn
+    module.shared_lambda_layer.lambda_layer_arn
   ]
 
 
@@ -47,12 +48,12 @@ module "lambda_vectorize_function" {
     SECRETS_NAME = "aws_secretsmanager_secret.supabase.name"
   }
 
-  depends_on = [module.Shared_lambda_layer]
+  depends_on = [module.shared_lambda_layer]
 
 }
 
 
-module "Shared_lambda_layer" {
+module "shared_lambda_layer" {
 
   source  = "terraform-aws-modules/lambda/aws"
   version = "8.1.2"
@@ -65,13 +66,39 @@ module "Shared_lambda_layer" {
 
   description = "nimbus share layer"
 
+  create_package = true
+  publish        = true
+
   compatible_runtimes = ["python3.13"]
 
-  source_path = "../../shared/src/shared"
-
-  build_in_docker = true
+  source_path = "builds/python"
 
   store_on_s3 = true
   s3_bucket   = module.s3_nimbus_share_layer.s3_bucket_id
 
+  depends_on = [null_resource.build_uv_layer]
+
+
 }
+
+
+resource "null_resource" "build_uv_layer" {
+  triggers = {
+    dir_hash = sha1(join("", [for f in fileset(path.root, "shared/**/*.py") : filesha1(f)]))
+    uv_hash  = filesha1("../../shared/pyproject.toml")
+    script_hash = filesha1("build_layer.sh")
+  }
+
+  provisioner "local-exec" {
+    when    = create
+    command = "bash build_layer.sh"
+  }
+}
+
+# data "archive_file" "layer_zip" {
+#   type        = "zip"
+#   source_dir  = "${path.module}/builds/python"
+#   output_path = "${path.module}/builds/python.zip"
+
+#   depends_on = [null_resource.build_uv_layer]
+# }
