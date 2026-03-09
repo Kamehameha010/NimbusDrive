@@ -7,7 +7,7 @@ module "s3_events" {
   bus_name   = "default"
 
   rules = {
-    s3_events_rule = {
+    s3_events = {
       name        = "s3-new-file-event-rule"
       description = "Rule to capture S3 events from NimbusDrive buckets"
       event_pattern = jsonencode({
@@ -45,7 +45,7 @@ module "s3_events" {
 
 
   targets = {
-    s3_events_rule = [
+    s3_events = [
       {
         arn             = module.lambda_vectorize_function.lambda_function_arn
         name            = "lambda-vectorize"
@@ -53,7 +53,5 @@ module "s3_events" {
       }
     ]
   }
-
-
 
 }

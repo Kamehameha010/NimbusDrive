@@ -10,9 +10,7 @@ module "s3_bucket_files" {
   versioning = {
     enabled = true
   }
-
   force_destroy = true
-
 
 }
 
@@ -21,7 +19,6 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
   eventbridge = true
 
 }
-
 
 module "s3_bucket_thumbnails" {
   source  = "terraform-aws-modules/s3-bucket/aws"
@@ -36,21 +33,5 @@ module "s3_bucket_thumbnails" {
     enabled = true
   }
 
-  force_destroy = true
-}
-
-
-module "s3_nimbus_share_layer" {
-  source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "5.10.0"
-
-  bucket = "nimbus-layers-${random_string.s3_bucket_suffix[2].id}"
-
-  control_object_ownership = true
-  object_ownership         = "ObjectWriter"
-
-  versioning = {
-    enabled = true
-  }
   force_destroy = true
 }

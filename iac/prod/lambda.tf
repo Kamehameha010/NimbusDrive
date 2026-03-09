@@ -22,83 +22,45 @@ module "lambda_authorizer_function" {
 
 }
 
-
 module "lambda_vectorize_function" {
   source        = "terraform-aws-modules/lambda/aws"
   version       = "8.1.2"
   function_name = "lambda-vectorize-${random_string.lambda_suffix[1].id}"
   description   = "Function for vectorizing documents"
-  handler       = "handler.handler"
-  runtime       = "python3.13"
 
-  source_path = "../../rag-service/rag.vectorize"
 
+  create_package = false
+  
   create_lambda_function_url = false
   create_role                = false
-  publish                    = true
 
   lambda_role = aws_iam_role.lambda_vectorize_role.arn
 
-  layers = [
-    module.shared_lambda_layer.lambda_layer_arn
-  ]
+  package_type = "Image"
+
+  image_uri = module.docker_build.image_uri
+
 
 
   environment_variables = {
     SECRETS_NAME = "aws_secretsmanager_secret.supabase.name"
   }
 
-  depends_on = [module.shared_lambda_layer]
-
 }
 
+module "docker_build" {
 
-module "shared_lambda_layer" {
+  source = "terraform-aws-modules/lambda/aws//modules/docker-build"
 
-  source  = "terraform-aws-modules/lambda/aws"
-  version = "8.1.2"
+  version         = "8.1.2"
+  
+  create_ecr_repo = true
+  ecr_repo        = "nimbus-lambda-vectorize"
 
-  create_layer = true
+  use_image_tag = true
+  image_tag     = "1.0"
 
-  runtime = "python3.13"
-
-  layer_name = "Nimbus-share-layer-${random_string.lambda_suffix[2].id}"
-
-  description = "nimbus share layer"
-
-  create_package = true
-  publish        = true
-
-  compatible_runtimes = ["python3.13"]
-
-  source_path = "builds/python"
-
-  store_on_s3 = true
-  s3_bucket   = module.s3_nimbus_share_layer.s3_bucket_id
-
-  depends_on = [null_resource.build_uv_layer]
-
+  source_path = "${path.module}/../.."
+  docker_file_path = "${path.module}/../../rag-service/rag.vectorize/Dockerfile"
 
 }
-
-
-resource "null_resource" "build_uv_layer" {
-  triggers = {
-    dir_hash = sha1(join("", [for f in fileset(path.root, "shared/**/*.py") : filesha1(f)]))
-    uv_hash  = filesha1("../../shared/pyproject.toml")
-    script_hash = filesha1("build_layer.sh")
-  }
-
-  provisioner "local-exec" {
-    when    = create
-    command = "bash build_layer.sh"
-  }
-}
-
-# data "archive_file" "layer_zip" {
-#   type        = "zip"
-#   source_dir  = "${path.module}/builds/python"
-#   output_path = "${path.module}/builds/python.zip"
-
-#   depends_on = [null_resource.build_uv_layer]
-# }
