@@ -5,16 +5,15 @@ from langchain_mongodb import MongoDBAtlasVectorSearch
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai.chat_models import ChatGoogleGenerativeAI
 from .schema import QueryDocument
-from .vector import get_vector_db
+from shared.vector import get_vector_db
+
+
 app = FastAPI()
 
 
-@app.get("/healthy")
+@app.get("/health")
 def healthy():
-    return {
-        "message": "Service runinng..."
-    }
-
+    return {"message": "Service runinng..."}
 
 @app.post("/documents/{doc_id}")
 async def analyze_document(

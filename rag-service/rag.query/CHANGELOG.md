@@ -19,3 +19,11 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - New endpoint `/documents/{doc_id}` for performing simple queries on a specific document.
+
+## [0.3.0] - 2026-01-29
+
+### Changed
+- Refactor service to use `shared` library for configuration and vector database interactions.
+- Removed local `config.py` and `vector.py` in favor of shared components.
+- Updated `pyproject.toml` to include `shared` dependency.
+

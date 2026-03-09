@@ -1,10 +1,9 @@
 # terafform folders
-.terraform/*
-builds/*
+**/.terraform/
+**/builds
 
 # terraform state
 
-*.tfstate
-*.tfstate.backup
+**/terraform.tfstate*
 
 *.lock.hcl

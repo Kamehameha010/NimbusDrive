@@ -7,7 +7,13 @@
     "features": {
         "ghcr.io/devcontainers/features/terraform:1": {},
         "ghcr.io/devcontainers/features/python:1": {},
-        "ghcr.io/devcontainers/features/aws-cli:1": {}
+        "ghcr.io/devcontainers/features/aws-cli:1": {},
+        "ghcr.io/jsburckhardt/devcontainer-features/uv:1": {},
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "moby": false,
+            "azureDnsAutoDetection": false
+
+        }
     },
     "customizations": {
         "vscode": {
@@ -23,11 +29,10 @@
             }
         }
     },
-    //"postCreateCommand": "uv lock",
-    // "postStartCommand": "uv run --env-file .env uvicorn main:app --host 0.0.0.0 --reload",
-    "hostRequirements": {
-        "cpus": 3,
-        "memory": "6gb",
-        "storage": "4gb"
-    }
+
+    // "containerEnv": {
+    //     "AWS_ENDPOINT_URL": "http://172.16.0.2:4566"
+    // },
+
+    "postCreateCommand": "pipx install awscli-local"
 }
