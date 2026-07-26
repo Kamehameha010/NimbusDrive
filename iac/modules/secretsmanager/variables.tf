@@ -1,15 +1,17 @@
-terraform {
+variable "secret_name" {
+  description = "The name of the secret to create in AWS Secrets Manager"
+  type        = string
+  default     = ""
+}
 
-  required_version = "~> 1.15.0"
+variable "description" {
+  description = "The description of the secret to create in AWS Secrets Manager"
+  type        = optional(string)
+  default     = ""
+}
 
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 6.0"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.0"
-    }
-  }
+variable "secret_string" {
+  description = "The secret string to store in AWS Secrets Manager"
+  type        = string
+  default     = ""
 }

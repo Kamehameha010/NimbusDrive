@@ -39,8 +39,6 @@ variable "authorizer_config" {
   }
 }
 
-
-
 variable "create_authorizer_lambda_permission" {
   description = "Whether to create the Lambda permission for the API Gateway authorizer"
   type        = bool
@@ -51,4 +49,36 @@ variable "lambda_authorizer_function_name" {
   description = "The name of the Lambda function to be used as the authorizer"
   type        = string
   default     = ""
+}
+
+variable "stages" {
+  description = "A map of stages to be created for the API Gateway"
+  type        = list(string)
+  default     = []
+}
+
+
+variable "api_gateway_resources" {
+  description = "A map of API Gateway resources to be created"
+  type = map(object({
+    path_part  = string
+    parent_key = optional(string)
+
+  }))
+  default = {}
+}
+
+variable "api_gateway_integrations" {
+  description = "A map of API Gateway integrations to be created"
+  type = map(object({
+    resource_key       = string
+    http_method        = string
+    authorization      = optional(string, "NONE")
+    integration_type   = optional(string, "AWS_PROXY")
+    integration_uri    = string
+    connection_type    = optional(string)
+    connection_id      = optional(string)
+    integration_target = optional(string)
+  }))
+  default = {}
 }

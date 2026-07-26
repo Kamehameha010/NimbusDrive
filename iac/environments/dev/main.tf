@@ -7,7 +7,7 @@ locals {
 
 
 module "api_gateway" {
-  source            = "/workspaces/NimbusDrive/iac/modules/apigateway"
+  source            = "../../modules/apigateway"
   api_name          = "NimbusApiGateway"
   api_description   = "API Gateway for Nimbus application"
   create_authorizer = false
