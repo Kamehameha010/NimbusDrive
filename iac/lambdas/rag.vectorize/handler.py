@@ -1,13 +1,12 @@
-from typing import Any, Generator
-
-
-from shared.vector import get_mongodb_client, get_vector_store
+import logging
+from collections.abc import Generator
+from typing import Any
 
 from langchain_community.document_loaders.s3_file import S3FileLoader
 from langchain_community.document_loaders.unstructured import UnstructuredBaseLoader
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-import logging
+from shared.vector import get_mongodb_client, get_vector_store
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -40,7 +39,7 @@ def handler(event, context):
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=520, chunk_overlap=100)
     
-    logger.info(f"Splitting document into chunks with chunk size 520 and chunk overlap 100")
+    logger.info("Splitting document into chunks with chunk size 520 and chunk overlap 100")
 
     docs = splitter.split_documents(doc_loaded)
     logger.info(f"Split document into {len(docs)} chunks")
@@ -60,6 +59,7 @@ def load_doc(
 ) -> Generator[Document, tuple[UnstructuredBaseLoader, dict], None]:
     if extra_metadata is None:
         yield from loader.lazy_load()
+        return
 
     for page in loader.lazy_load():
         page.metadata.update(**extra_metadata)

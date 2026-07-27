@@ -4,8 +4,7 @@
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
     "features": {
         "ghcr.io/devcontainers-extra/features/pnpm:2": {},
-        "ghcr.io/devcontainers/features/terraform:1": {},
-        "ghcr.io/audacioustux/devcontainers/localstack:1": {}
+        "ghcr.io/devcontainers/features/terraform:1": {}
     },
     "customizations": {
         "vscode": {

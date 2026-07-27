@@ -26,3 +26,17 @@ variable "supabase_jwt_secret" {
   type      = string
   sensitive = true
 }
+
+
+variable "ssm_parameters" {
+  type = map(object({
+    name        = string
+    description = optional(string)
+    type        = string
+    value       = string
+    key_id      = optional(string)
+    tags        = optional(map(string))
+
+  }))
+  default = {}
+}

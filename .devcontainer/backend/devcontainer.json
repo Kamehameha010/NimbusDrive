@@ -1,10 +1,18 @@
 {
-    "name": "Nimbus RAG Vectorize",
-    "image":"mcr.microsoft.com/devcontainers/python:dev-3.12-bookworm",
+    "name": "Backend",
+    "image": "mcr.microsoft.com/devcontainers/python:dev-3.13-trixie",
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
     "features": {
         "ghcr.io/jsburckhardt/devcontainer-features/uv:1": {},
-        "ghcr.io/jsburckhardt/devcontainer-features/ruff:1": {}
+        "ghcr.io/jsburckhardt/devcontainer-features/ruff:1": {},
+        "ghcr.io/devcontainers/features/go:1": {},
+        "ghcr.io/devcontainers/features/terraform:1": {},
+        "ghcr.io/devcontainers/features/aws-cli:1": {},
+        "ghcr.io/jsburckhardt/devcontainer-features/opencode:1": {},
+        "ghcr.io/devcontainers/features/docker-in-docker:4.0.0": {
+            "moby": false,
+            "azureDnsAutoDetection": false
+        }
     },
     "customizations": {
         "vscode": {
@@ -17,13 +25,15 @@
                 "ms-python.debugpy",
                 "github.copilot",
                 "github.copilot-chat",
-                "dannysteenman.aws-terraform-extension-pack"
+                "dannysteenman.aws-terraform-extension-pack",
+                "golang.go",
+                "premparihar.gotestexplorer",
+                "766b.go-outliner"
             ],
             "settings": {
-                "python.defaultInterpreterPath": "/workspaces/NimbusDrive/rag-service/rag.vectorize/.venv/bin/python",
                 "python.linting.enabled": true,
-                "python.linting.ruffEnabled": true,
                 "python.linting.pylintEnabled": false,
+                "python.linting.ruffEnabled": true,
                 "editor.formatOnSave": true,
                 "files.autoSave": "afterDelay",
                 "editor.codeActionsOnSave": {
@@ -34,7 +44,7 @@
             }
         }
     },
-    "postCreateCommand": "cd rag-service/rag.vectorize && uv sync --locked",
+    "postCreateCommand": "chmod +x ./scripts/start-script.sh && ./scripts/start-script.sh",
     // "postStartCommand": "uv run --env-file .env uvicorn main:app --host 0.0.0.0 --reload",
     "hostRequirements": {
         "cpus": 2,
@@ -44,6 +54,9 @@
     "forwardPorts": [
         8000
     ],
+    "containerEnv": {
+        "PROJECT_ENV": "dev"
+    },
     "portsAttributes": {
         "8000": {
             "protocol": "http",

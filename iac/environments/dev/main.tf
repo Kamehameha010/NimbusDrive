@@ -6,25 +6,7 @@ locals {
 }
 
 
-module "api_gateway" {
-  source            = "../../modules/apigateway"
-  api_name          = "NimbusApiGateway"
-  api_description   = "API Gateway for Nimbus application"
-  create_authorizer = false
-  authorizer_config = {
-    name                   = "SupabaseAuthorizer"
-    description            = "Authorizer for Supabase"
-    authorizer_uri         = module.lambda_authorizer_function.lambda_function_invoke_arn
-    type                   = "TOKEN"
-    identity_source        = "method.request.header.Authorization"
-    ttl_in_seconds         = 120
-    authorizer_credentials = aws_iam_role.invocation_role.arn
-  }
-  create_authorizer_lambda_permission = true
-  lambda_authorizer_function_name     = module.lambda_authorizer_function.lambda_function_name
-}
-
-
+#region S3 Configuration
 module "s3_bucket_files" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "5.10.0"
@@ -62,8 +44,31 @@ module "s3_bucket_thumbnails" {
 
   force_destroy = true
 }
+#endregion S3 Configuration
 
 
+#region API GATEWAY Configuration
+module "api_gateway" {
+  source            = "../../modules/apigateway"
+  api_name          = "NimbusApiGateway"
+  api_description   = "API Gateway for Nimbus application"
+  create_authorizer = false
+  authorizer_config = {
+    name                   = "SupabaseAuthorizer"
+    description            = "Authorizer for Supabase"
+    authorizer_uri         = module.lambda_authorizer_function.lambda_function_invoke_arn
+    type                   = "TOKEN"
+    identity_source        = "method.request.header.Authorization"
+    ttl_in_seconds         = 120
+    authorizer_credentials = aws_iam_role.invocation_role.arn
+  }
+  create_authorizer_lambda_permission = true
+  lambda_authorizer_function_name     = module.lambda_authorizer_function.lambda_function_name
+}
+#endregion API GATEWAY Configuration
+
+
+#region Lambda Configuration
 module "lambda_authorizer_function" {
   source        = "terraform-aws-modules/lambda/aws"
   version       = "8.1.2"
@@ -136,7 +141,10 @@ resource "terraform_data" "build_and_push_image" {
   depends_on = [aws_ecr_repository.lambda_repo]
 }
 
+#endregion Lambda Configuration
 
+
+#region IAM ROLE
 #region IAM ROLE FOR API GATEWAY TO INVOKE LAMBDA AUTHORIZER
 
 data "aws_iam_policy_document" "invocation_assume_role" {
@@ -297,69 +305,80 @@ resource "aws_iam_role" "lambda_vectorize_role" {
 #endregion
 
 
+#endregion IAM ROLE
+
+#region EventBridge Configuration
+
+module "s3_events" {
+
+  source  = "terraform-aws-modules/eventbridge/aws"
+  version = "~> 4.3.0"
+
+  create_bus = false
+  bus_name   = "default"
+
+  rules = {
+    s3_events = {
+      name        = "s3-new-file-event-rule"
+      description = "Rule to capture S3 events from NimbusDrive buckets"
+      event_pattern = jsonencode({
+        "source" : [
+          "aws.s3"
+        ],
+
+        "region" : [var.aws_region]
+
+        "detail-type" : [
+          "Object Created",
+        ],
+
+        "resources" : [
+          module.s3_bucket_files.s3_bucket_arn
+        ],
+        "detail" : {
+          "bucket" : {
+            "name" : [{
+              "equals-ignore-case" : module.s3_bucket_files.s3_bucket_id
+            }]
+          }
+        }
+      })
+
+    }
+
+  }
+
+  create_role = true
+  role_name   = "Amazon_EventBridge_Invoke_Lambda-${local.iam_role_suffix}"
+
+  lambda_target_arns   = [module.lambda_vectorize_function.lambda_function_arn]
+  attach_lambda_policy = true
+
+
+  targets = {
+    s3_events = [
+      {
+        arn             = module.lambda_vectorize_function.lambda_function_arn
+        name            = "lambda-vectorize"
+        attach_role_arn = true
+      }
+    ]
+  }
+
+}
+
+
+#endregion EventBridge Configuration
 
 
 
-# module "s3_events" {
-
-#   source  = "terraform-aws-modules/eventbridge/aws"
-#   version = "~> 4.3.0"
-
-#   create_bus = false
-#   bus_name   = "default"
-
-#   rules = {
-#     s3_events = {
-#       name        = "s3-new-file-event-rule"
-#       description = "Rule to capture S3 events from NimbusDrive buckets"
-#       event_pattern = jsonencode({
-#         "source" : [
-#           "aws.s3"
-#         ],
-
-#         "region" : [var.aws_region]
-
-#         "detail-type" : [
-#           "Object Created",
-#         ],
-
-#         "resources" : [
-#           module.s3_bucket_files.s3_bucket_arn
-#         ],
-#         "detail" : {
-#           "bucket" : {
-#             "name" : [{
-#               "equals-ignore-case" : module.s3_bucket_files.s3_bucket_id
-#             }]
-#           }
-#         }
-#       })
-
-#     }
-
-#   }
-
-#   create_role = true
-#   role_name   = "Amazon_EventBridge_Invoke_Lambda-${local.iam_role_suffix}"
-
-#   lambda_target_arns   = [module.lambda_vectorize_function.lambda_function_arn]
-#   attach_lambda_policy = true
-
-
-#   targets = {
-#     s3_events = [
-#       {
-#         arn             = module.lambda_vectorize_function.lambda_function_arn
-#         name            = "lambda-vectorize"
-#         attach_role_arn = true
-#       }
-#     ]
-#   }
-
-# }
+#region SSM Configuration
+module "ssm" {
+  source = "../../modules/ssm"
+  environment = "dev"
+  ssm_parameters = var.ssm_parameters
+}
 
 
 
-
-
-
+#endregion SSM Configuration

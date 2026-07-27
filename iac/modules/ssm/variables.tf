@@ -8,8 +8,8 @@ variable "environment" {
   default     = "prod"
 
   validation {
-    condition     = anytrue([for p in local.available_environments : p == var.environment])
-    error_message = "Invalid environment. Must be one of: ${local.available_environments}"
+    condition     = contains([for e in local.available_environments : lower(e)], lower(var.environment))
+    error_message = "Invalid environment. Must be one of: ${join(", ", local.available_environments)}"
   }
 }
 

@@ -59,10 +59,10 @@ NimbusDrive is a serverless document storage and Q&A platform. Upload files via 
 |---------|----------|-------|-------------|
 | **Nimbus UI** | `nimbus-ui/` | Preact + Rolldown-Vite | Frontend application |
 | **Document Service** | `document-service/` | Go + Fiber + AWS SDK | File upload API (single & multipart) |
-| **RAG Query** | `rag-service/rag.query/` | Python + FastAPI + LangChain | Q&A interface over vectorized documents |
-| **Vectorize Lambda** | `rag-service/rag.vectorize/` | Python + LangChain + Unstructured | Event-driven document vectorization |
-| **Authorizer** | `apigateway/authorizer/` | Python + PyJWT | Supabase JWT validation for API Gateway |
-| **Shared Library** | `shared/` | Python | Common config and vector store utilities |
+| **RAG Query** | `iac/lambdas/rag.query/` | Python + FastAPI + LangChain | Q&A interface over vectorized documents |
+| **Vectorize Lambda** | `iac/lambdas/rag.vectorize/` | Python + LangChain + Unstructured | Event-driven document vectorization |
+| **Authorizer** | `iac/lambdas/authorizer/` | Python + PyJWT | Supabase JWT validation for API Gateway |
+| **Shared Library** | `iac/lambdas/shared/` | Python | Common config and vector store utilities |
 | **Infrastructure** | `iac/` | Terraform | AWS infrastructure (dev + prod) |
 
 ---
@@ -106,7 +106,7 @@ cd NimbusDrive
 ### 2. Infrastructure (dev with LocalStack)
 
 ```bash
-cd iac/dev
+cd iac/environments/dev
 terraform init
 terraform plan
 terraform apply
@@ -123,7 +123,7 @@ APP_PORT=8080 AWS_S3_BUCKET_NAME=nimbus-drive AWS_REGION=us-east-1 go run cmd/ap
 ### 4. RAG Query Service
 
 ```bash
-cd rag-service/rag.query
+cd iac/lambdas/rag.query
 uv sync
 uv run uvicorn src.main:app --reload
 ```
@@ -156,7 +156,6 @@ Secrets are managed via AWS SSM Parameter Store under `/nimbus/app/*` and `/nimb
 
 ```
 NimbusDrive/
-├── apigateway/authorizer/     # Lambda authorizer (JWT validation)
 ├── docs/                      # Architecture diagram, analysis, checklist
 ├── document-service/          # Go/Fiber API for file uploads
 │   ├── cmd/api/main.go
@@ -164,15 +163,21 @@ NimbusDrive/
 │   ├── pkg/
 │   └── tests/
 ├── iac/                       # Terraform infrastructure
-│   ├── dev/                   # LocalStack environment
-│   └── prod/                  # AWS production environment
+│   ├── environments/
+│   │   ├── dev/               # LocalStack environment
+│   │   └── prod/              # AWS production environment
+│   ├── lambdas/
+│   │   ├── authorizer/        # Lambda authorizer (JWT validation)
+│   │   ├── rag.query/         # FastAPI RAG query service
+│   │   ├── rag.vectorize/     # Lambda for document vectorization
+│   │   └── shared/            # Shared Python library
+│   └── modules/
+│       ├── apigateway/
+│       ├── secretsmanager/
+│       └── ssm/
 ├── nimbus-ui/                 # Preact frontend
 │   └── src/
-├── rag-service/
-│   ├── rag.query/             # FastAPI RAG query service
-│   └── rag.vectorize/         # Lambda for document vectorization
-├── shared/                    # Shared Python library
-│   └── src/shared/
+├── scripts/                   # Utility scripts
 └── .devcontainer/             # VS Code dev container configs
 ```
 
@@ -195,7 +200,7 @@ Tests are only implemented in the Document Service currently. Contributions welc
 Deploy to production with Terraform:
 
 ```bash
-cd iac/prod
+cd iac/environments/prod
 terraform init
 terraform plan
 terraform apply
