@@ -7,3 +7,5 @@
 **/terraform.tfstate*
 
 *.lock.hcl
+
+_prod/

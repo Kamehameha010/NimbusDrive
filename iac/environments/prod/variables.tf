@@ -12,38 +12,9 @@ variable "aws_secret_access_key" {
   sensitive = true
 }
 
-variable "mongo_uri" {
-  type      = string
-  sensitive = true
-}
-
-variable "mongodb_dbname" {
-  type = string
-}
-
-variable "mongodb_collection" {
-  type = string
-}
-
-variable "mongodb_vector_index" {
-  type = string
-}
-
-variable "google_api_key" {
-  type      = string
-  sensitive = true
-}
-
-variable "google_model_embedding" {
-  type = string
-}
-
-variable "google_model_chat" {
-  type = string
-}
-
 variable "supabase_url" {
-  type = string
+  type      = string
+  sensitive = true
 }
 
 variable "supabase_anon_key" {
@@ -57,6 +28,15 @@ variable "supabase_jwt_secret" {
 }
 
 
-variable "kms_ssm_id" {
-  type = string
+variable "ssm_parameters" {
+  type = map(object({
+    name        = string
+    description = optional(string)
+    type        = string
+    value       = string
+    key_id      = optional(string)
+    tags        = optional(map(string))
+
+  }))
+  default = {}
 }
